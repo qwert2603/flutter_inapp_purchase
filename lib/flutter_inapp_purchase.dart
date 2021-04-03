@@ -463,20 +463,7 @@ class FlutterInappPurchase {
     Map<String, String> receiptBody,
     bool isTest = true,
   }) async {
-    assert(receiptBody != null);
-    assert(isTest != null);
-
-    final String url = isTest
-        ? 'https://sandbox.itunes.apple.com/verifyReceipt'
-        : 'https://buy.itunes.apple.com/verifyReceipt';
-    return await http.post(
-      url,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(receiptBody),
-    );
+    return null;
   }
 
   /// Validate receipt in android
@@ -502,20 +489,7 @@ class FlutterInappPurchase {
     String accessToken,
     bool isSubscription = false,
   }) async {
-    assert(packageName != null);
-    assert(productId != null);
-    assert(productToken != null);
-    assert(accessToken != null);
-
-    final String type = isSubscription ? 'subscriptions' : 'products';
-    final String url =
-        'https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken';
-    return await _client.get(
-      url,
-      headers: {
-        'Accept': 'application/json',
-      },
-    );
+    return null;
   }
 
   /// Add additional success purchase listener to iOS when purchase failed
