@@ -9,6 +9,12 @@ import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
+  test("t", () async {
+    final q = FlutterInappPurchase.initConnection;
+    print(q);
+    print(await q);
+  });
+
   group('FlutterInappPurchase', () {
     group('platformVersion', () {
       final List<MethodCall> log = <MethodCall>[];
@@ -152,7 +158,7 @@ void main() {
     group('getProducts', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-        List<String> skus = List()..add("testsku");
+        List<String> skus = []..add("testsku");
 
         final dynamic result = """[
           {
@@ -243,7 +249,7 @@ void main() {
 
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
-        List<String> skus = List()..add("testsku");
+        List<String> skus = []..add("testsku");
 
         final dynamic result = [
           {
@@ -295,14 +301,14 @@ void main() {
 
         test('returns correct result', () async {
           List<IAPItem> products = await FlutterInappPurchase.getProducts(skus);
-          List<IAPItem> expected = result
+          List<IAPItem>? expected = result
               .map<IAPItem>(
                 (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
             var product = products[i];
-            var expectedProduct = expected[i];
+            var expectedProduct = expected![i];
             expect(product.productId, expectedProduct.productId);
             expect(product.price, expectedProduct.price);
             expect(product.currency, expectedProduct.currency);
@@ -335,7 +341,7 @@ void main() {
     group('getSubscriptions', () {
       group('for Android', () {
         final List<MethodCall> log = <MethodCall>[];
-        List<String> skus = List()..add("testsku");
+        List<String> skus = []..add("testsku");
 
         final dynamic result = """[
           {
@@ -426,7 +432,7 @@ void main() {
 
       group('for iOS', () {
         final List<MethodCall> log = <MethodCall>[];
-        List<String> skus = List()..add("testsku");
+        List<String> skus = []..add("testsku");
 
         final dynamic result = [
           {
@@ -479,14 +485,14 @@ void main() {
         test('returns correct result', () async {
           List<IAPItem> products =
               await FlutterInappPurchase.getSubscriptions(skus);
-          List<IAPItem> expected = result
+          List<IAPItem>? expected = result
               .map<IAPItem>(
                 (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
             var product = products[i];
-            var expectedProduct = expected[i];
+            var expectedProduct = expected![i];
             expect(product.productId, expectedProduct.productId);
             expect(product.price, expectedProduct.price);
             expect(product.currency, expectedProduct.currency);
@@ -585,7 +591,8 @@ void main() {
 
         test('returns correct result', () async {
           List<PurchasedItem> actualList =
-              await FlutterInappPurchase.getPurchaseHistory();
+              await (FlutterInappPurchase.getPurchaseHistory()
+                  .then((value) => value!));
           List<PurchasedItem> expectList = ((json.decode(resultInapp) as List) +
                   (json.decode(resultSubs) as List))
               .map((item) => PurchasedItem.fromJSON(item))
@@ -670,14 +677,15 @@ void main() {
 
         test('returns correct result', () async {
           List<PurchasedItem> actualList =
-              await FlutterInappPurchase.getPurchaseHistory();
-          List<PurchasedItem> expectList = result
+              await (FlutterInappPurchase.getPurchaseHistory()
+                  .then((value) => value!));
+          List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) => PurchasedItem.fromJSON(item))
               .toList();
 
           for (var i = 0; i < actualList.length; ++i) {
             PurchasedItem actual = actualList[i];
-            PurchasedItem expected = expectList[i];
+            PurchasedItem expected = expectList![i];
 
             expect(actual.transactionDate, expected.transactionDate);
             expect(actual.transactionId, expected.transactionId);
@@ -851,14 +859,14 @@ void main() {
         test('returns correct result', () async {
           List<PurchasedItem> actualList =
               await FlutterInappPurchase.getAvailablePurchases();
-          List<PurchasedItem> expectList = result
+          List<PurchasedItem>? expectList = result
               .map<PurchasedItem>((item) =>
                   PurchasedItem.fromJSON(item as Map<String, dynamic>))
               .toList();
 
           for (var i = 0; i < actualList.length; ++i) {
             PurchasedItem actual = actualList[i];
-            PurchasedItem expected = expectList[i];
+            PurchasedItem expected = expectList![i];
 
             expect(actual.transactionDate, expected.transactionDate);
             expect(actual.transactionId, expected.transactionId);
@@ -1293,7 +1301,7 @@ void main() {
 
         test('returns correct result', () async {
           expect(await FlutterInappPurchase.getAppStoreInitiatedProducts(),
-              List<IAPItem>());
+              <IAPItem>[]);
         });
       });
 
@@ -1345,14 +1353,14 @@ void main() {
         test('returns correct result', () async {
           List<IAPItem> products =
               await FlutterInappPurchase.getAppStoreInitiatedProducts();
-          List<IAPItem> expected = result
+          List<IAPItem>? expected = result
               .map<IAPItem>(
                 (product) => IAPItem.fromJSON(product as Map<String, dynamic>),
               )
               .toList();
           for (var i = 0; i < products.length; ++i) {
             var product = products[i];
-            var expectedProduct = expected[i];
+            var expectedProduct = expected![i];
             expect(product.productId, expectedProduct.productId);
             expect(product.price, expectedProduct.price);
             expect(product.currency, expectedProduct.currency);
@@ -1409,13 +1417,14 @@ void main() {
         final String productToken = "testProductToken";
         final String accessToken = "testAccessToken";
         final String type = "subscriptions";
-        final response = await FlutterInappPurchase.validateReceiptAndroid(
-            packageName: packageName,
-            productId: productId,
-            productToken: productToken,
-            accessToken: accessToken,
-            isSubscription: true);
-        expect(response.request.url.toString(),
+        final response = await (FlutterInappPurchase.validateReceiptAndroid(
+                packageName: packageName,
+                productId: productId,
+                productToken: productToken,
+                accessToken: accessToken,
+                isSubscription: true)
+            .then((value) => value!));
+        expect(response.request!.url.toString(),
             "https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
       });
       test('returns correct http request url, isSubscription is false',
@@ -1425,13 +1434,14 @@ void main() {
         final String productToken = "testProductToken";
         final String accessToken = "testAccessToken";
         final String type = "products";
-        final response = await FlutterInappPurchase.validateReceiptAndroid(
-            packageName: packageName,
-            productId: productId,
-            productToken: productToken,
-            accessToken: accessToken,
-            isSubscription: false);
-        expect(response.request.url.toString(),
+        final response = await (FlutterInappPurchase.validateReceiptAndroid(
+                packageName: packageName,
+                productId: productId,
+                productToken: productToken,
+                accessToken: accessToken,
+                isSubscription: false)
+            .then((value) => value!));
+        expect(response.request!.url.toString(),
             "https://www.googleapis.com/androidpublisher/v2/applications/$packageName/purchases/$type/$productId/tokens/$productToken?access_token=$accessToken");
       });
     });
